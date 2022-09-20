@@ -3,26 +3,19 @@
 
 import os
 import pathlib
-import shutil
 
-from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.chrome.service import Service
-
-from webdriver_manager.chrome import ChromeDriverManager
-from webdriver_manager.core.utils import ChromeType
 
 import PIL.Image
 import PIL.ImageDraw
 
 import cv2
 import numpy as np
-
-import datetime
 import time
+
+from webdriver import create_driver
 
 DATA_PATH = pathlib.Path(os.path.dirname(__file__)).parent / "data"
 LOG_PATH = DATA_PATH / "log"
@@ -63,41 +56,6 @@ def draw_text(img, text, pos, font, align="left", color="#000"):
     draw.text(pos, text, color, font, None, font.getsize(text)[1] * 0.4)
 
     return font.getsize(text)[0]
-
-
-def create_driver():
-    options = Options()
-    options.add_argument("--headless")
-    options.add_argument("--no-sandbox")  # for Docker
-    options.add_argument("--disable-dev-shm-usage")  # for Docker
-
-    options.add_argument("--lang=ja-JP")
-    options.add_argument("--window-size=1920,1080")
-
-    options.add_argument(
-        '--user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.80 Safari/537.36"'
-    )
-    options.add_argument("--user-data-dir=" + CHROME_DATA_PATH)
-
-    # NOTE: 下記がないと，snap で入れた chromium が「LC_ALL: cannot change locale (ja_JP.UTF-8)」
-    # と出力し，その結果 ChromeDriverManager がバージョンを正しく取得できなくなる
-    os.environ["LC_ALL"] = "C"
-
-    if shutil.which("google-chrome") is not None:
-        chrome_type = ChromeType.GOOGLE
-    else:
-        chrome_type = ChromeType.CHROMIUM
-
-    driver = webdriver.Chrome(
-        service=Service(
-            ChromeDriverManager(chrome_type=chrome_type).install(),
-            log_path=DRIVER_LOG_PATH,
-            service_args=["--verbose"],
-        ),
-        options=options,
-    )
-
-    return driver
 
 
 def shape_cloud_display(driver, parts_list, width, height, is_future):
@@ -277,7 +235,6 @@ def draw_rain_cloud_panel(panel_config, font_config):
     )
     face_map = get_face_map(font_config)
 
-    sub_panel = []
     for sub_panel_config in SUB_PANEL_CONFIG_LIST:
         sub_img = retouch_cloud_image(
             fetch_cloud_image(
