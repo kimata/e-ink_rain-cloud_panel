@@ -212,7 +212,8 @@ def retouch_cloud_image(png_data):
         img_hsv[level["func"](h, s), 1] = 80
         img_hsv[level["func"](h, s), 2] = 256 / 16 * (16 - i * 2)
 
-    img_hsv[s < 30, 2] = np.clip(v[(s < 30)] * 1.5, 0, 255)
+    # NOTE: 白地図の色をやや明るめにする
+    img_hsv[s < 30, 2] = np.clip(pow(v[(s < 30)], 1.35) * 0.3, 0, 255)
 
     return PIL.Image.fromarray(
         cv2.cvtColor(img_hsv.astype(np.uint8), cv2.COLOR_HSV2RGB_FULL)
