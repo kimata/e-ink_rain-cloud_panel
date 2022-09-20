@@ -180,21 +180,21 @@ def draw_rain_cloud_panel(panel_config, font_config):
         {
             "is_future": True,
             "title": "１時間後",
-            "offset_x": int(config["RAIN_CLOUD"]["WIDTH"] / 2),
+            "offset_x": int(panel_config["WIDTH"] / 2),
         },
     ]
     driver = create_driver()
 
     change_window_size(
         driver,
-        config["RAIN_CLOUD"]["URL"],
-        int(config["RAIN_CLOUD"]["WIDTH"] / 2),
-        config["RAIN_CLOUD"]["HEIGHT"],
+        panel_config["URL"],
+        int(panel_config["WIDTH"] / 2),
+        panel_config["HEIGHT"],
     )
 
     img = PIL.Image.new(
         "RGBA",
-        (config["PANEL"]["DEVICE"]["WIDTH"], config["PANEL"]["DEVICE"]["HEIGHT"]),
+        (panel_config["WIDTH"], panel_config["HEIGHT"]),
         (255, 255, 255, 255),
     )
     face_map = get_face_map(font_config)
@@ -203,9 +203,9 @@ def draw_rain_cloud_panel(panel_config, font_config):
         sub_img = retouch_cloud_image(
             fetch_cloud_image(
                 driver,
-                config["RAIN_CLOUD"]["URL"],
-                int(config["RAIN_CLOUD"]["WIDTH"] / 2),
-                config["RAIN_CLOUD"]["HEIGHT"],
+                panel_config["URL"],
+                int(panel_config["WIDTH"] / 2),
+                panel_config["HEIGHT"],
                 sub_panel_config["is_future"],
             )
         )
@@ -231,6 +231,6 @@ if __name__ == "__main__":
 
     img = draw_rain_cloud_panel(config["RAIN_CLOUD"], config["FONT"])
 
-    img.save("rain_cloud.png", "PNG")
+    img.save("test_rain_cloud_panel.png", "PNG")
 
     print("Finish.")
