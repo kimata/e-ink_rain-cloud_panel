@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
 # - coding: utf-8 --
-
-import os
-import pathlib
-
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -16,46 +12,15 @@ import numpy as np
 import time
 
 from webdriver import create_driver
-
-DATA_PATH = pathlib.Path(os.path.dirname(__file__)).parent / "data"
-LOG_PATH = DATA_PATH / "log"
-
-CHROME_DATA_PATH = str(DATA_PATH / "chrome")
-DUMP_PATH = str(DATA_PATH / "deubg")
-
-DRIVER_LOG_PATH = str(LOG_PATH / "webdriver.log")
+from pil_util import get_font, draw_text
 
 CLOUD_IMAGE_XPATH = '//div[contains(@id, "jmatile_map_")]'
-
-
-def get_font(config, font_type, size):
-    return PIL.ImageFont.truetype(
-        str(
-            pathlib.Path(
-                os.path.dirname(__file__), config["PATH"], config["MAP"][font_type]
-            )
-        ),
-        size,
-    )
 
 
 def get_face_map(font_config):
     return {
         "title": get_font(font_config, "JP_MEDIUM", 50),
     }
-
-
-def draw_text(img, text, pos, font, align="left", color="#000"):
-    draw = PIL.ImageDraw.Draw(img)
-
-    if align == "center":
-        pos = (pos[0] - font.getsize(text)[0] / 2, pos[1])
-    elif align == "right":
-        pos = (pos[0] - font.getsize(text)[0], pos[1])
-
-    draw.text(pos, text, color, font, None, font.getsize(text)[1] * 0.4)
-
-    return font.getsize(text)[0]
 
 
 def shape_cloud_display(driver, parts_list, width, height, is_future):
@@ -129,7 +94,6 @@ def fetch_cloud_image(driver, url, width, height, is_future=False):
         lambda driver: driver.execute_script("return document.readyState") == "complete"
     )
     time.sleep(0.5)
-    driver.save_screenshot("dump.png")
 
     png_data = driver.find_element(By.XPATH, CLOUD_IMAGE_XPATH).screenshot_as_png
     driver.refresh()
