@@ -233,11 +233,11 @@ def draw_equidistant_circle(img):
         width=3,
     )
     # 5km
-    size = 200
+    size = 322
     draw.ellipse(
         (x - size / 2, y - size / 2, x + size / 2, y + size / 2),
         outline=(60, 60, 60),
-        width=2,
+        width=3,
     )
 
 
