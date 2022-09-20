@@ -252,6 +252,14 @@ def draw_caption(img, title, face):
 
 
 def draw_rain_cloud_panel(panel_config, font_config):
+    SUB_PANEL_CONFIG_LIST = [
+        {"is_future": False, "title": "現在", "offset_x": 0},
+        {
+            "is_future": True,
+            "title": "１時間後",
+            "offset_x": int(config["RAIN_CLOUD"]["WIDTH"] / 2),
+        },
+    ]
     driver = create_driver()
 
     change_window_size(
@@ -261,40 +269,29 @@ def draw_rain_cloud_panel(panel_config, font_config):
         config["RAIN_CLOUD"]["HEIGHT"],
     )
 
-    now_cloud = retouch_cloud_image(
-        fetch_cloud_image(
-            driver,
-            config["RAIN_CLOUD"]["URL"],
-            int(config["RAIN_CLOUD"]["WIDTH"] / 2),
-            config["RAIN_CLOUD"]["HEIGHT"],
-        )
-    )
-    future_cloud = retouch_cloud_image(
-        fetch_cloud_image(
-            driver,
-            config["RAIN_CLOUD"]["URL"],
-            int(config["RAIN_CLOUD"]["WIDTH"] / 2),
-            config["RAIN_CLOUD"]["HEIGHT"],
-            True,
-        )
-    )
-    driver.quit()
-
-    draw_equidistant_circle(now_cloud)
-    draw_equidistant_circle(future_cloud)
-
-    face_map = get_face_map(font_config)
-    draw_caption(now_cloud, "現在", face_map)
-    draw_caption(future_cloud, "１時間後", face_map)
-
     img = PIL.Image.new(
         "RGBA",
         (config["PANEL"]["DEVICE"]["WIDTH"], config["PANEL"]["DEVICE"]["HEIGHT"]),
         (255, 255, 255, 255),
     )
+    face_map = get_face_map(font_config)
 
-    img.paste(now_cloud, (0, 0))
-    img.paste(future_cloud, (int(config["RAIN_CLOUD"]["WIDTH"] / 2), 0))
+    sub_panel = []
+    for sub_panel_config in SUB_PANEL_CONFIG_LIST:
+        sub_img = retouch_cloud_image(
+            fetch_cloud_image(
+                driver,
+                config["RAIN_CLOUD"]["URL"],
+                int(config["RAIN_CLOUD"]["WIDTH"] / 2),
+                config["RAIN_CLOUD"]["HEIGHT"],
+                sub_panel_config["is_future"],
+            )
+        )
+        draw_equidistant_circle(sub_img)
+        draw_caption(sub_img, sub_panel_config["title"], face_map)
+        img.paste(sub_img, (sub_panel_config["offset_x"], 0))
+
+    driver.quit()
 
     return img.convert("L")
 
