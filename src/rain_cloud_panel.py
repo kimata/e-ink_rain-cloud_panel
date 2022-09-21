@@ -174,7 +174,7 @@ def draw_caption(img, title, face):
     )
 
 
-def draw_rain_cloud_panel(panel_config, font_config):
+def create(panel_config, font_config):
     SUB_PANEL_CONFIG_LIST = [
         {"is_future": False, "title": "現在", "offset_x": 0},
         {
@@ -229,7 +229,7 @@ if __name__ == "__main__":
 
     config = load_config()
 
-    img = draw_rain_cloud_panel(config["RAIN_CLOUD"], config["FONT"])
+    img = create(config["RAIN_CLOUD"], config["FONT"])
 
     img.save("test_rain_cloud_panel.png", "PNG")
 
