@@ -238,8 +238,10 @@ def draw_caption(img, title, face):
 
 
 def create(panel_config, font_config):
+    now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9), "JST"))
+
     SUB_PANEL_CONFIG_LIST = [
-        {"is_future": False, "title": "現在", "offset_x": 0},
+        {"is_future": False, "title": now.strftime("現在(%H:%M)"), "offset_x": 0},
         {
             "is_future": True,
             "title": "１時間後",
