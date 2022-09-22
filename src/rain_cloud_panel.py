@@ -182,7 +182,10 @@ def retouch_cloud_image(png_data):
     img_hsv[s < 30, 2] = np.clip(pow(v[(s < 30)], 1.35) * 0.3, 0, 255)
 
     return PIL.Image.fromarray(
-        cv2.cvtColor(img_hsv.astype(np.uint8), cv2.COLOR_HSV2RGB_FULL)
+        cv2.cvtColor(
+            cv2.cvtColor(img_hsv.astype(np.uint8), cv2.COLOR_HSV2RGB_FULL),
+            cv2.COLOR_RGB2RGBA,
+        )
     )
 
 
@@ -206,8 +209,22 @@ def draw_equidistant_circle(img):
         width=3,
     )
 
+    return img
+
 
 def draw_caption(img, title, face):
+    size = face["title"].getsize(title)
+    x = 10
+    y = 10
+    padding = 9
+
+    overlay = PIL.Image.new("RGBA", img.size, (255, 255, 255, 0))
+    draw = PIL.ImageDraw.Draw(overlay)
+    draw.rectangle(
+        (x - padding, y - padding, x + size[0] + padding, y + size[1] + padding),
+        fill=(255, 255, 255, 128),
+    )
+    img = PIL.Image.alpha_composite(img, overlay)
     draw_text(
         img,
         title,
@@ -216,6 +233,8 @@ def draw_caption(img, title, face):
         "left",
         color="#000",
     )
+
+    return img
 
 
 def create(panel_config, font_config):
@@ -253,8 +272,9 @@ def create(panel_config, font_config):
                 sub_panel_config["is_future"],
             )
         )
-        draw_equidistant_circle(sub_img)
-        draw_caption(sub_img, sub_panel_config["title"], face_map)
+        time.sleep(1)
+        sub_img = draw_equidistant_circle(sub_img)
+        sub_img = draw_caption(sub_img, sub_panel_config["title"], face_map)
         img.paste(sub_img, (sub_panel_config["offset_x"], 0))
 
     driver.quit()
@@ -265,8 +285,6 @@ def create(panel_config, font_config):
 if __name__ == "__main__":
     import logger
     from config import load_config
-
-    import logging
 
     logger.init("test")
     logging.info("Test")
