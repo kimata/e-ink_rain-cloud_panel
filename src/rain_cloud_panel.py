@@ -7,9 +7,11 @@ from selenium.webdriver.support import expected_conditions as EC
 import PIL.Image
 import PIL.ImageDraw
 
+import datetime
 import cv2
 import numpy as np
 import time
+import logging
 
 from webdriver import create_driver
 from pil_util import get_font, draw_text
@@ -56,19 +58,61 @@ var elements = document.getElementsByClassName("{class_name}")
 def change_window_size(driver, url, width, height):
     wait = WebDriverWait(driver, 5)
 
+    # NOTE: 雨雲画像がこのサイズになるように，ウィンドウサイズを調整する
+    logging.info("target: {width} x {height}".format(width=width, height=height))
+
     driver.get(url)
-    # NOTE: まずは横幅を大きめにしておく
-    driver.set_window_size(width, int(height * 1.5))
-    wait.until(EC.presence_of_element_located((By.XPATH, CLOUD_IMAGE_XPATH)))
+
+    # NOTE: まずはサイズを大きめにしておく
+    driver.set_window_size(int(height * 2), int(height * 1.5))
     driver.refresh()
     wait.until(EC.presence_of_element_located((By.XPATH, CLOUD_IMAGE_XPATH)))
 
+    # NOTE: 最初に横サイズを調整
+    window_size = driver.get_window_size()
     element_size = driver.find_element(By.XPATH, CLOUD_IMAGE_XPATH).size
+    logging.info(
+        "[current] window: {window_width} x {window_height}, element: {element_width} x {element_height}".format(
+            window_width=window_size["width"],
+            window_height=window_size["height"],
+            element_width=element_size["width"],
+            element_height=element_size["height"],
+        )
+    )
+    if element_size["width"] != width:
+        target_window_width = window_size["width"] + (width - element_size["width"])
+        logging.info(
+            "[change] window: {window_width} x {window_height}".format(
+                window_width=target_window_width,
+                window_height=window_size["height"],
+            )
+        )
+        driver.set_window_size(target_window_width, height)
+    driver.refresh()
+    wait.until(EC.presence_of_element_located((By.XPATH, CLOUD_IMAGE_XPATH)))
+
+    # NOTE: 次に縦サイズを調整
+    window_size = driver.get_window_size()
+    element_size = driver.find_element(By.XPATH, CLOUD_IMAGE_XPATH).size
+    logging.info(
+        "[current] window: {window_width} x {window_height}, element: {element_width} x {element_height}".format(
+            window_width=window_size["width"],
+            window_height=window_size["height"],
+            element_width=element_size["width"],
+            element_height=element_size["height"],
+        )
+    )
     if element_size["height"] != height:
-        window_size = driver.get_window_size()
+        target_window_height = window_size["height"] + (height - element_size["height"])
+        logging.info(
+            "[change] window: {window_width} x {window_height}".format(
+                window_width=window_size["width"],
+                window_height=target_window_height,
+            )
+        )
         driver.set_window_size(
-            width,
-            window_size["height"] + (height - element_size["height"]),
+            window_size["width"],
+            target_window_height,
         )
 
 
