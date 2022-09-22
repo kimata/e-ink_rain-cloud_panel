@@ -28,7 +28,7 @@ WEEKLY_FORECAST_XPATH = '//table[@class="yjw_table"]'
 
 def get_face_map(font_config):
     return {
-        "date": get_font(font_config, "EN_HEAVY", 70),
+        "date": get_font(font_config, "EN_HEAVY", 80),
         "wday": get_font(font_config, "JP_REGULAR", 40),
         "weather": get_font(font_config, "JP_BOLD", 40),
         "temp": get_font(font_config, "EN_MEDIUM", 70),
@@ -176,7 +176,7 @@ def create(panel_config, font_config):
             "center",
             color="#333",
         )
-        img.paste(icon_img, (int((241.3 * (i + 0.5)) - (icon_img.size[0] / 2)), 130))
+        img.paste(icon_img, (int((step_x * (i + 0.5)) - (icon_img.size[0] / 2)), 130))
         draw_text(
             img,
             forecast["weather"][0],
