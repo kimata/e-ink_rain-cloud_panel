@@ -60,9 +60,9 @@ except:
 
     draw_text(
         img,
-        "\n".join(textwrap.wrap(traceback.format_exc(), 45)),
+        "\n".join(textwrap.wrap(traceback.format_exc(), 95)),
         [20, 200],
-        get_font(config["FONT"], "EN_MEDIUM", 40),
+        get_font(config["FONT"], "EN_MEDIUM", 30),
         "left" "#333",
     )
     print(traceback.format_exc(), file=sys.stderr)

@@ -194,14 +194,20 @@ def draw_equidistant_circle(img):
     x = img.size[0] / 2
     y = img.size[1] / 2
 
-    size = 15
+    size = 20
     draw.ellipse(
         (x - size / 2, y - size / 2, x + size / 2, y + size / 2),
-        fill=(120, 120, 120),
+        fill=(255, 255, 255),
         outline=(60, 60, 60),
-        width=3,
+        width=5,
     )
     # 5km
+    size = 327
+    draw.ellipse(
+        (x - size / 2, y - size / 2, x + size / 2, y + size / 2),
+        outline=(255, 255, 255),
+        width=8,
+    )
     size = 322
     draw.ellipse(
         (x - size / 2, y - size / 2, x + size / 2, y + size / 2),
@@ -216,13 +222,30 @@ def draw_caption(img, title, face):
     size = face["title"].getsize(title)
     x = 10
     y = 10
-    padding = 9
+    padding = 12
+    radius = 20
+    alpha = 200
 
     overlay = PIL.Image.new("RGBA", img.size, (255, 255, 255, 0))
     draw = PIL.ImageDraw.Draw(overlay)
     draw.rectangle(
+        (
+            x - padding,
+            y - padding,
+            x + size[0] + padding - radius,
+            y + size[1] + padding,
+        ),
+        fill=(255, 255, 255, alpha),
+    )
+    draw.rectangle(
+        (x - padding, y - padding, x + size[0] + padding, y + padding),
+        fill=(255, 255, 255, alpha),
+    )
+
+    draw.rounded_rectangle(
         (x - padding, y - padding, x + size[0] + padding, y + size[1] + padding),
-        fill=(255, 255, 255, 128),
+        fill=(255, 255, 255, alpha),
+        radius=radius,
     )
     img = PIL.Image.alpha_composite(img, overlay)
     draw_text(
