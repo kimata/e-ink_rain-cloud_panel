@@ -18,6 +18,7 @@ from cv2 import dnn_superres
 import numpy as np
 import time
 import locale
+import logging
 
 from webdriver import create_driver
 from pil_util import get_font, draw_text
@@ -143,6 +144,8 @@ def get_weekly_forecast_list(panel_config):
 
 
 def create(panel_config, font_config):
+    logging.info("create weekly forecast panel")
+
     forecast_list = get_weekly_forecast_list(panel_config)
 
     img = PIL.Image.new(
@@ -251,8 +254,6 @@ document.body.style.fontWeight = 500;
 if __name__ == "__main__":
     import logger
     from config import load_config
-
-    import logging
 
     logger.init("test")
     logging.info("Test")

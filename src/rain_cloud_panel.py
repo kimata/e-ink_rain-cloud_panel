@@ -283,6 +283,8 @@ def draw_caption(img, title, face):
 
 
 def create(panel_config, font_config):
+    logging.info("create rain cloud panel")
+
     now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9), "JST"))
 
     SUB_PANEL_CONFIG_LIST = [
