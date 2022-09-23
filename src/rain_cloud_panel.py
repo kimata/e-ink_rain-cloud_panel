@@ -62,6 +62,7 @@ def change_window_size(driver, url, width, height):
     logging.info("target: {width} x {height}".format(width=width, height=height))
 
     driver.get(url)
+    wait.until(EC.presence_of_element_located((By.XPATH, CLOUD_IMAGE_XPATH)))
 
     # NOTE: まずはサイズを大きめにしておく
     driver.set_window_size(int(height * 2), int(height * 1.5))
@@ -114,6 +115,27 @@ def change_window_size(driver, url, width, height):
             window_size["width"],
             target_window_height,
         )
+    driver.refresh()
+    wait.until(EC.presence_of_element_located((By.XPATH, CLOUD_IMAGE_XPATH)))
+    time.sleep(0.5)
+
+    window_size = driver.get_window_size()
+    element_size = driver.find_element(By.XPATH, CLOUD_IMAGE_XPATH).size
+    logging.info(
+        "[current] window: {window_width} x {window_height}, element: {element_width} x {element_height}".format(
+            window_width=window_size["width"],
+            window_height=window_size["height"],
+            element_width=element_size["width"],
+            element_height=element_size["height"],
+        )
+    )
+    logging.info(
+        "size is {status}".format(
+            status="OK"
+            if (element_size["width"], element_size["height"]) == (width, height)
+            else "NG"
+        )
+    )
 
 
 def fetch_cloud_image(driver, url, width, height, is_future=False):
